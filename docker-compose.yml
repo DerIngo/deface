@@ -1,0 +1,51 @@
+services:
+  deface-backend:
+    build: 
+      context: ./deface-backend
+      dockerfile: Dockerfile
+    container_name: deface-backend
+    restart: unless-stopped
+    networks:
+      - traefik-net
+    volumes:
+      - deface-volume:/app/data
+    environment:
+      - APP_ROOT_PATH=/api
+    labels:
+      - "traefik.enable=true"
+      # Hört nur auf den /api Pfad
+      - "traefik.http.routers.deface-api.rule=Host(`${DOMAIN_NAME}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.deface-api.entrypoints=websecure"
+      - "traefik.http.routers.deface-api.tls.certresolver=letsencrypt"
+      # Entfernt das "/api" bevor es beim FastAPI-Container ankommt
+      - "traefik.http.middlewares.api-strip.stripprefix.prefixes=/api"
+      - "traefik.http.routers.deface-api.middlewares=api-strip"
+      - "traefik.http.services.deface-api.loadbalancer.server.port=8000"
+
+
+  deface-frontend:
+    image: nginx:alpine # Beispielhaft für ein späteres Frontend
+    container_name: deface-frontend
+    restart: unless-stopped
+    networks:
+      - traefik-net
+    volumes:
+      - deface-volume:/app/data
+    labels:
+      - "traefik.enable=true"
+      # Hört auf alles unter der Domain (niedrigere Priorität als das API-Match)
+      - "traefik.http.routers.deface-fe.rule=Host(${DOMAIN_NAME}`)"
+      - "traefik.http.routers.deface-fe.entrypoints=websecure"
+      - "traefik.http.routers.deface-fe.tls.certresolver=letsencrypt"
+      - "traefik.http.services.deface-fe.loadbalancer.server.port=80"
+
+
+volumes:
+  # wird zZt noch nicht benutzt
+  deface-volume:
+    external: true
+
+networks:
+  traefik-net:
+    external: true
+
