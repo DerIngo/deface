@@ -34,7 +34,7 @@ services:
     labels:
       - "traefik.enable=true"
       # Hört auf alles unter der Domain (niedrigere Priorität als das API-Match)
-      - "traefik.http.routers.deface-fe.rule=Host(${DOMAIN_NAME}`)"
+      - "traefik.http.routers.deface-fe.rule=Host(`${DOMAIN_NAME}`)"
       - "traefik.http.routers.deface-fe.entrypoints=websecure"
       - "traefik.http.routers.deface-fe.tls.certresolver=letsencrypt"
       - "traefik.http.services.deface-fe.loadbalancer.server.port=80"
