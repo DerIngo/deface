@@ -28,7 +28,9 @@ services:
 
 
   deface-frontend:
-    image: nginx:alpine # Beispielhaft für ein späteres Frontend
+    build: 
+      context: ./deface-frontend
+      dockerfile: Dockerfile
     container_name: deface-frontend
     restart: unless-stopped
     networks:
