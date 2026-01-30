@@ -35,6 +35,8 @@ services:
       - traefik-net
     volumes:
       - deface-volume:/app/data
+    environment:
+        - VITE_IMAGE_DEFACE_ENDPOINT=https://${DOMAIN_NAME}/api/deface-image
     labels:
       - "traefik.enable=true"
       # Hört auf alles unter der Domain (niedrigere Priorität als das API-Match)
