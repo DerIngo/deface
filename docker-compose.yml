@@ -11,7 +11,7 @@ services:
       - deface-volume:/app/data
     environment:
       - APP_ROOT_PATH=/api
-      - CORS_ALLOW_ORIGINS=*
+      - CORS_ALLOW_ORIGINS=${DOMAIN_NAME}
       - CORS_ALLOW_METHODS=*
       - CORS_ALLOW_HEADERS=*
       - CsORS_ALLOW_CREDENTIALS=false
