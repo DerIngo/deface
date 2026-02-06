@@ -6,6 +6,7 @@ services:
     container_name: deface-backend
     restart: unless-stopped
     networks:
+      - deface-net
       - traefik-net
     volumes:
       - deface-volume:/app/data
@@ -47,6 +48,22 @@ services:
       - "traefik.http.routers.deface-fe.tls.certresolver=letsencrypt"
       - "traefik.http.services.deface-fe.loadbalancer.server.port=80"
 
+  deface-telegram:
+    build: 
+      context: ./deface-telegram
+      dockerfile: Dockerfile
+    container_name: deface-telegram
+    restart: unless-stopped
+    networks:
+      - deface-net
+    volumes:
+      - deface-volume:/app/data
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_BOT_USERNAME=${TELEGRAM_BOT_USERNAME}
+      - DEFACE_ENDPOINT=http://deface-backend:8000/deface-image
+    labels:
+      - "traefik.enable=false"
 
 volumes:
   # wird zZt noch nicht benutzt
@@ -54,6 +71,8 @@ volumes:
     external: true
 
 networks:
+  deface-net:
+    external: true
   traefik-net:
     external: true
 
